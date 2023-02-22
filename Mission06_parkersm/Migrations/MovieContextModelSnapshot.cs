@@ -16,15 +16,55 @@ namespace Mission06_parkersm.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.1.32");
 
+            modelBuilder.Entity("Mission06_parkersm.Models.Category", b =>
+                {
+                    b.Property<int>("CategoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("CategoryName")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("CategoryId");
+
+                    b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            CategoryId = 1,
+                            CategoryName = "Thriller"
+                        },
+                        new
+                        {
+                            CategoryId = 2,
+                            CategoryName = "Adventure"
+                        },
+                        new
+                        {
+                            CategoryId = 3,
+                            CategoryName = "Action"
+                        },
+                        new
+                        {
+                            CategoryId = 4,
+                            CategoryName = "Romance"
+                        },
+                        new
+                        {
+                            CategoryId = 5,
+                            CategoryName = "Comedy"
+                        });
+                });
+
             modelBuilder.Entity("Mission06_parkersm.Models.MovieSubmittal", b =>
                 {
                     b.Property<int>("MovieId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Director")
                         .IsRequired()
@@ -54,13 +94,15 @@ namespace Mission06_parkersm.Migrations
 
                     b.HasKey("MovieId");
 
+                    b.HasIndex("CategoryId");
+
                     b.ToTable("movieSubmittals");
 
                     b.HasData(
                         new
                         {
                             MovieId = 1,
-                            Category = "Thriller",
+                            CategoryId = 1,
                             Director = "M. Night Shyamalan",
                             Edited = false,
                             LentTo = "",
@@ -72,7 +114,7 @@ namespace Mission06_parkersm.Migrations
                         new
                         {
                             MovieId = 2,
-                            Category = "Adventure",
+                            CategoryId = 2,
                             Director = "Ben Stiller",
                             Edited = false,
                             LentTo = "",
@@ -84,7 +126,7 @@ namespace Mission06_parkersm.Migrations
                         new
                         {
                             MovieId = 3,
-                            Category = "Action",
+                            CategoryId = 3,
                             Director = "Joss Whedon",
                             Edited = false,
                             LentTo = "",
@@ -93,6 +135,15 @@ namespace Mission06_parkersm.Migrations
                             Title = "The Avengers",
                             Year = "2012"
                         });
+                });
+
+            modelBuilder.Entity("Mission06_parkersm.Models.MovieSubmittal", b =>
+                {
+                    b.HasOne("Mission06_parkersm.Models.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Mission06_parkersm.Models;
 using System;
@@ -11,14 +12,12 @@ namespace Mission06_parkersm.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-        private  MovieContext movieContexts { get; set; }
+        private  MovieContext movieContext { get; set; }
 
         //Constructor
-        public HomeController(ILogger<HomeController> logger, MovieContext somename)
+        public HomeController(MovieContext somename)
         {
-            _logger = logger;
-            movieContexts = somename;
+            movieContext = somename;
         }
 
         public IActionResult Index()
@@ -29,6 +28,7 @@ namespace Mission06_parkersm.Controllers
         [HttpGet]
         public IActionResult AddAMovie()
         {
+            ViewBag.Categories = movieContext.Categories.ToList();
             return View("AddingMovie");
         }
         [HttpPost]
@@ -36,25 +36,66 @@ namespace Mission06_parkersm.Controllers
         {
             if (ModelState.IsValid)
             {
-                movieContexts.Add(ms);
-                movieContexts.SaveChanges();
+                movieContext.Add(ms);
+                movieContext.SaveChanges();
                 return View("Confirmation", ms);
             }
             else
             {
-                return View("AddingMovie");
+                return View(ms);
             }
         }
-
-        public IActionResult Privacy()
+        [HttpGet]
+        public IActionResult MovieList()
         {
-            return View();
+            var submittals = movieContext.movieSubmittals
+                .Include(i => i.Category)
+                .OrderBy(i => i.MovieId)
+                .ToList();
+
+            return View(submittals);
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        [HttpGet]
+        public IActionResult Edit (int id)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            ViewBag.Categories = movieContext.Categories.ToList();
+
+            var aMovie = movieContext.movieSubmittals.Single(i => i.MovieId == id);
+
+            return View("AddingMovie", aMovie);
+        }
+
+        [HttpPost]
+        public IActionResult Edit (MovieSubmittal ms2)
+        {
+            if (ModelState.IsValid)
+            {
+                movieContext.Update(ms2);
+                movieContext.SaveChanges();
+                return RedirectToAction("MovieList");
+            }
+            else
+            {
+                ViewBag.Categories = movieContext.Categories.ToList();
+
+                return View("AddingMovie",ms2);
+            }
+
+        }
+        [HttpGet]
+        public IActionResult Delete (int id)
+        {
+            var aMovie = movieContext.movieSubmittals.Single(i => i.MovieId == id);
+            return View(aMovie);
+        }
+        [HttpPost]
+        public IActionResult Delete (MovieSubmittal ms3)
+        {
+            movieContext.movieSubmittals.Remove(ms3);
+            movieContext.SaveChanges();
+
+            return RedirectToAction("MovieList");
         }
     }
 }

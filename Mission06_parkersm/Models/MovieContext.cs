@@ -15,14 +15,23 @@ namespace Mission06_parkersm.Models
         }
 
         public DbSet<MovieSubmittal> movieSubmittals { get; set; }
+        public DbSet<Category> Categories { get; set; }
 
         protected override void OnModelCreating(ModelBuilder mb)
         {
+            mb.Entity<Category>().HasData(
+                new Category { CategoryId=1, CategoryName="Thriller"},
+                new Category { CategoryId=2, CategoryName="Adventure"},
+                new Category { CategoryId=3, CategoryName="Action"},
+                new Category { CategoryId=4, CategoryName="Romance"},
+                new Category { CategoryId=5, CategoryName="Comedy"}
+                );
+
             mb.Entity<MovieSubmittal>().HasData(
                 new MovieSubmittal
                 {
                     MovieId = 1,
-                    Category = "Thriller",
+                    CategoryId = 1,
                     Title = "Split",
                     Year = "2016",
                     Director = "M. Night Shyamalan",
@@ -34,7 +43,7 @@ namespace Mission06_parkersm.Models
                 new MovieSubmittal
                 {
                     MovieId = 2,
-                    Category = "Adventure",
+                    CategoryId = 2,
                     Title = "The Secret Life of Walter Mitty",
                     Year = "2013",
                     Director = "Ben Stiller",
@@ -46,7 +55,7 @@ namespace Mission06_parkersm.Models
                 new MovieSubmittal
                 {
                     MovieId = 3,
-                    Category = "Action",
+                    CategoryId = 3,
                     Title = "The Avengers",
                     Year = "2012",
                     Director = "Joss Whedon",
